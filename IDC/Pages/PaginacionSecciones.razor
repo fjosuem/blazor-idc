@@ -1,0 +1,68 @@
+﻿@using System.Net.Http.Json
+@using System.Text.Json
+@inject HttpClient httpClient
+
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link" style="cursor: pointer;" aria-label="Previous" hidden="@IsFirstPage" @onclick="PreviousPage">&laquo;</a></li>
+        @for (int i = 1; i <= TotalPages + 1; i++)
+        {
+            int pageNumber = i;
+            <li class="page-item @(i == PageIndex ? "active" : "")"><a class="page-link" style="cursor: pointer;" aria-label="IrAPagina" @onclick="(() => GoToPage(pageNumber))">@i</a></li>
+        }
+        <li class="page-item"><a class="page-link" style="cursor: pointer;" aria-label="Next" hidden="@IsLastPage" @onclick="NextPage">&raquo;</a></li>
+    </ul>
+</nav>
+
+
+
+@code {
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public int PageSize { get; set; }
+    [Parameter] public int PageIndex { get; set; }
+    [Parameter] public EventCallback<int> PageChanged { get; set; }
+
+    public bool IsFirstPage => PageIndex == 1;
+    public bool IsLastPage => PageIndex == TotalPages + 1;
+
+    private async Task GoToFirstPage()
+    {
+        if (!IsFirstPage)
+        {
+            await PageChanged.InvokeAsync(1);
+        }
+    }
+
+    private async Task GoToLastPage()
+    {
+        if (!IsLastPage)
+        {
+            await PageChanged.InvokeAsync(PageSize);
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (!IsFirstPage)
+        {
+            await PageChanged.InvokeAsync(PageIndex - 1);
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (!IsLastPage)
+        {
+            await PageChanged.InvokeAsync(PageIndex + 1);
+        }
+    }
+
+    private async Task GoToPage(int page)
+    {
+        if (page != PageIndex)
+        {
+            await PageChanged.InvokeAsync(page);
+        }
+    }
+}

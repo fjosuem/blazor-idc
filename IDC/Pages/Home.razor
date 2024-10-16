@@ -1,0 +1,268 @@
+﻿@page "/"
+@inject HttpClient Http
+@inject GlobalUtil globalUtil
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+
+
+<PageTitle>Home</PageTitle>
+<Carrusel urlImagenUno="@dataPresentacion?.UrlImagenUno" urlImagenDos="@dataPresentacion?.UrlImagenDos" urlImagenTres="@dataPresentacion?.UrlImagenTres" urlImagenCuatro="@dataPresentacion?.UrlImagenCuatro" />
+<Spinner />
+@if (dataPresentacion != null)
+{
+    <section class="bg-dark text-white">
+        <header>
+            <h1 itemprop="name" id="idcristo" style="font-family: 'Rye', cursive; font-size: 1.6rem !important" class="text-center tituloPrincipal mb-0 py-2">Iglesia de Cristo - Columna y Fundamento de la Verdad</h1>
+        </header>
+    </section>
+
+    <aside class="container bg-white pt-2">
+        <section class="row">
+            <section class="col">
+                @((dataPresentacion?.TextoAlFinal != null) ? (MarkupString)dataPresentacion.TextoAlFinal : null)
+            </section>
+        </section>
+    </aside>
+
+    <aside class="container bg-white pt-2 mb-4">
+        <section class="row">
+            <section class="col text-center">
+
+                <a target="_blank" class="hvr-grow" href="https://montes.cc">
+                    <img class="img-responsive d-block" style="max-width: 100%; margin: 0 auto;" src="@($"{globalUtil.UrlIDCAnterior}/Images/enlaceaebs.png")">
+                </a>
+            </section>
+        </section>
+    </aside>
+
+    <section class="container bg-white pt-2">
+        <section class="row row-cols-1 row-cols-md-3 g-4">
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Servicios web" class="text-decoration-none" href="#">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="Imagen servicio" src="@($"{globalUtil.UrlIDCAnterior}{dataPresentacion?.UrlImagenOferta}")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Servicios Web</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Quiénes somos" class="text-decoration-none" href="quienessomos">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenQuienesSomos" src="@($"{globalUtil.UrlIDCAnterior}{dataPresentacion?.UrlImagenQuienesSomos}")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Quiénes Somos</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Doctrina" class="text-decoration-none" href="doctrina">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenDoctrina" src="@($"{globalUtil.UrlIDCAnterior}{dataPresentacion?.UrlImagenDoctrina}")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Doctrina</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+        </section>
+    </section>
+
+    <section class="container bg-white pt-2">
+        <section class="row row-cols-1 row-cols-md-3 g-4">
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Cantos Espirituales" class="text-decoration-none" href="#">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenCantosEspirituales" src="@($"{globalUtil.UrlIDCAnterior}{dataPresentacion?.UrlImagenCantosEspirituales}")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Cantos Espirituales</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Directorio" class="text-decoration-none" href="#">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenDirectorio" src="@($"{globalUtil.UrlIDCAnterior}{dataPresentacion?.UrlImagenDirectorio}")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Directorio</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Palabras de Dios" class="text-decoration-none" href="#">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenPalabrasDeDios" src="@($"{globalUtil.UrlIDCAnterior}{dataPresentacion?.UrlImagenCitasBiblicas}")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Palabras de Dios</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+        </section>
+    </section>
+
+    <section class="container bg-white pt-2">
+        <section class="row row-cols-1 row-cols-md-3 g-4">
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Catálogo" class="text-decoration-none" href="#">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenCatalogo" src="@($"{globalUtil.UrlIDCAnterior}{dataPresentacion?.UrlImagenEnlaces}")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Catálogo</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Preguntas Frecuentes" class="text-decoration-none" href="#">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenPreguntasFrecuentes" src="@($"{globalUtil.UrlIDCAnterior}{dataPresentacion?.UrlImagenPreguntasFrecuentes}")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Preguntas Frecuentes</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Griego" class="text-decoration-none" href="griego">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenGriego" src="@($"{globalUtil.UrlIDCAnterior}/Images/griego.png")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Griego del N.T.</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+        </section>
+    </section>
+
+    <section class="container bg-white pt-2">
+        <section class="row row-cols-1 row-cols-md-3 g-4">
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Lenín Munguía" class="text-decoration-none" href="lenin">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenLeninMunguia" src="@($"{globalUtil.UrlIDCAnterior}/Images/lenin.jpeg")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Lenín Munguía</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Devocionales" class="text-decoration-none" href="devocional">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenDevocionales" src="@($"{globalUtil.UrlIDCAnterior}/Images/devocionales.jpeg")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Devocionales</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+            <section class="col hvr-shrink">
+                <div class="card">
+                    <NavLink title="Ir a Melodías" class="text-decoration-none" href="alabanza">
+                        <header class="card-body py-0 px-0">
+                            <img itemprop="image" alt="ImagenMelodias" src="@($"{globalUtil.UrlIDCAnterior}/Images/alabanzas.jpeg")" style="width: 100%;" />
+                        </header>
+                        <footer class="card-footer py-0 px-0 d-grid">
+                            <button class="btn btn-sm btn-dark btn-block" style="border-radius: 0px !important;">Melodías</button>
+                        </footer>
+                    </NavLink>
+                </div>
+            </section>
+        </section>
+    </section>
+
+    <br />
+}
+@code {
+    private Congregacion? dataPresentacion;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var consulta = await Http.GetFromJsonAsync<Congregacion[]>($"{globalUtil.UrlApi}/api/congregacion");
+        if (consulta != null)
+        {
+            dataPresentacion = consulta[0];
+            dataPresentacion.TextoAlFinal = System.Net.WebUtility.UrlDecode(dataPresentacion.TextoAlFinal);
+
+            if (dataPresentacion.UrlImagenUno != null)
+            {
+                dataPresentacion.UrlImagenUno = $"{globalUtil.UrlIDCAnterior}/{dataPresentacion.UrlImagenUno}";
+            }
+
+            if (dataPresentacion.UrlImagenDos != null)
+            {
+                dataPresentacion.UrlImagenDos = $"{globalUtil.UrlIDCAnterior}/{dataPresentacion.UrlImagenDos}";
+            }
+
+            if (dataPresentacion.UrlImagenTres != null)
+            {
+                dataPresentacion.UrlImagenTres = $"{globalUtil.UrlIDCAnterior}/{dataPresentacion.UrlImagenTres}";
+            }
+
+            if (dataPresentacion.UrlImagenCuatro != null)
+            {
+                dataPresentacion.UrlImagenCuatro = $"{globalUtil.UrlIDCAnterior}/{dataPresentacion.UrlImagenCuatro}";
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(2000);
+            await JSRuntime.InvokeVoidAsync("hideSpinnerOP");
+        }
+    }
+
+    public class Congregacion
+    {
+        public int IdCongregacion { get; set; }
+        public string? Nombre { get; set; }
+        public string? UrlImagenUno { get; set; }
+        public string? UrlImagenDos { get; set; }
+        public string? UrlImagenTres { get; set; }
+        public string? UrlImagenCuatro { get; set; }
+        public string? UrlImagenOferta { get; set; }
+        public string? Facebook { get; set; }
+        public string? Twitter { get; set; }
+        public string? UrlImagenDoctrina { get; set; }
+        public string? UrlImagenQuienesSomos { get; set; }
+        public string? UrlImagenCantosEspirituales { get; set; }
+        public string? UrlImagenOraciones { get; set; }
+        public string? UrlImagenPreguntasFrecuentes { get; set; }
+        public string? UrlImagenDirectorio { get; set; }
+        public string? UrlImagenEnlaces { get; set; }
+        public string? UrlImagenCitasBiblicas { get; set; }
+        public string? TextoAlFinal { get; set; }
+        public DateTime? FechaCreacion { get; set; }
+        public DateTime? FechaEdicion { get; set; }
+    }
+}

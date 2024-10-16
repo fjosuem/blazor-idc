@@ -1,0 +1,89 @@
+﻿@page "/detalledevocional/{idDevocionalParam}"
+@inject HttpClient Http
+@inject GlobalUtil globalUtil
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+
+<Spinner />
+
+
+@if (detalleDevocional != null)
+{
+    <section class="row bg-light text-dark">
+        <article class="col">
+            <h1 itemprop="name" class="text-center tituloHdos">@detalleDevocional[0].Titulo</h1>
+        </article>
+    </section>
+
+    <aside class="container bg-white pt-2">
+        <section class="row">
+            <section class="col-12">
+                @foreach (DevocionalDetalleDto item in detalleDevocional)
+                {
+                    <section class="card mb-2">
+                        <header>
+                            @if (string.IsNullOrWhiteSpace(item.UrlVideoYoutube))
+                            {
+                                <a title="Ver imagen" href="@($"{globalUtil.UrlIDCAnterior}/{item.UrlImagen}")" target="_blank">
+                                    <img alt="@item.Titulo" style="width: 50%; margin: 0 auto; display: block;" src="@($"{globalUtil.UrlIDCAnterior}/{item.UrlImagen}")" class="card-img-top imgMain">
+                                </a>
+                            }
+                        </header>
+
+                        @if (!string.IsNullOrWhiteSpace(item.UrlVideoYoutube))
+                        {
+                            <section class="col-12 mt-2 text-center">
+                                <iframe style="max-width: 100%;" width="560" height="315" src="@item.UrlVideoYoutube" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </section>
+                        }
+
+                        <article class="card-body textoDetalle">
+                            @{
+                                string descripcionDecodificada = !string.IsNullOrEmpty(item.Descripcion) ? System.Net.WebUtility.UrlDecode(item.Descripcion) : "";
+                            }
+                            @((!string.IsNullOrEmpty(descripcionDecodificada)) ? (MarkupString)descripcionDecodificada : null)
+                        </article>
+                    </section>
+                }
+            </section>
+        </section>
+    </aside>
+}
+
+@code {
+    [Parameter]
+    public string? idDevocionalParam { get; set; }
+    private DevocionalDetalleDto[]? detalleDevocional;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        idDevocionalParam = idDevocionalParam.Split('-')[0];
+        detalleDevocional = await Http.GetFromJsonAsync<DevocionalDetalleDto[]>($"{globalUtil.UrlApi}/api/devocional/{idDevocionalParam}");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(2000);
+            await JSRuntime.InvokeVoidAsync("hideSpinnerOP");
+        }
+    }
+
+    public class DevocionalDetalleDto
+    {
+        public int IdDetalleDevocional { get; set; }
+        public int IdDevocional { get; set; }
+        public string? Titulo { get; set; }
+        public string? Descripcion { get; set; }
+        public string? UrlImagen { get; set; }
+        public DateTime? FechaCreacion { get; set; }
+        public DateTime? FechaEdicion { get; set; }
+        public string? UrlVideoYoutube { get; set; }
+    }
+
+}

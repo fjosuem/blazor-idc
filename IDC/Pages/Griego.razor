@@ -1,0 +1,112 @@
+﻿@page "/griego"
+@inject HttpClient Http
+@inject GlobalUtil globalUtil
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+
+<Spinner />
+
+<section class="row bg-light text-dark">
+    <article class="col">
+        <h1 itemprop="name" class="text-center tituloHdos">Griego del N.T.</h1>
+    </article>
+</section>
+
+<div class="row mb-2">
+    <div class="col d-flex justify-content-center">
+        <img class="imgMain" src="@UrlImagengriego" width="50%" />
+    </div>
+</div>
+
+<div class="d-flex justify-content-center">
+    <PaginacionSecciones PageSize="PageSize" PageIndex="PageIndex" PageChanged="PageChanged" TotalPages="TotalPages" />
+</div>
+
+<section class="container bg-white pt-2">
+    <section class="row row-cols-1 row-cols-md-3 g-4">
+
+        @if (listagriego != null)
+        {
+            foreach (var seccion in listagriego)
+            {
+                <section class="col hvr-shrink">
+                    <section class="card hvr-shrink cardTieneContenido">
+                        <NavLink title="Ver sección" class="text-decoration-none" href="@($"detallegriego/{globalUtil.GenerarSlug(seccion.Idgriego, seccion?.Titulo)}")">
+
+                            <input type="hidden" id="id" name="id" value="seccion.GenerateSlug" />
+
+                            <header>
+                                <h5 style="background-color: #5b6d7f !important;" class="card-header text-white">@seccion.Titulo</h5>
+                                @if (!string.IsNullOrWhiteSpace(seccion.UrlImagen))
+                                {
+                                    <img alt="@seccion.Titulo" style="max-width: 200px !important; margin: 0 auto;" src="@($"{globalUtil.UrlIDCAnterior}/{seccion.UrlImagen}")" class="card-img-top d-block">
+                                }
+                            </header>
+
+                            <article class="card-body">
+                                @seccion.Descripcion
+                            </article>
+
+                            <footer class="card-footer py-0 px-0 d-grid">
+                                <button style="background-color: #5b6d7f !important; border-radius: 0px !important;" class="btn btn-sm btn-dark btn-block">Ver artículo completo</button>
+                            </footer>
+                        </NavLink>
+                    </section>
+                </section>
+            }
+        }
+    </section>
+
+</section>
+
+<div class="d-flex mt-2 justify-content-center">
+    <PaginacionSecciones PageSize="PageSize" PageIndex="PageIndex" PageChanged="PageChanged" TotalPages="TotalPages" />
+</div>
+
+@code {
+    private GriegoDTO[]? listagriego;
+    private int TotalPages { get; set; }
+    private int PageSize { get; set; } = 12;
+    private int PageIndex { get; set; } = 1;
+    public string? UrlImagengriego { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        listagriego = await Http.GetFromJsonAsync<GriegoDTO[]>($"{globalUtil.UrlApi}/api/griego/pag/{PageIndex}/{PageSize}");
+        if (listagriego != null)
+        {
+            TotalPages = listagriego[0].TotalPaginas;
+            UrlImagengriego = $"{globalUtil.UrlIDCAnterior}/Images/griego.png";
+        }
+    }
+
+    public class GriegoDTO
+    {
+        public int Idgriego { get; set; }
+        public int IdCongregacion { get; set; }
+        public string? Titulo { get; set; }
+        public string? Descripcion { get; set; }
+        public string? UrlImagen { get; set; }
+        public int TotalPaginas { get; set; }
+        public string? UrlImagenGriego { get; set; }
+    }
+
+    private async Task PageChanged(int page)
+    {
+        PageIndex = page;
+        await LoadData();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(2000);
+            await JSRuntime.InvokeVoidAsync("hideSpinnerOP");
+        }
+    }
+}

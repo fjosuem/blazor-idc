@@ -1,0 +1,67 @@
+﻿@page "/weather"
+@inject HttpClient Http
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@Convert.ToDateTime(forecast.FechaCreacion).ToShortDateString()</td>
+                    <td>@forecast.Titulo</td>
+                    <td>@forecast.Descripcion</td>
+                    @if (!string.IsNullOrEmpty(forecast.UrlImagen))
+                    {
+                        string urlImagen = $"https://iglesiadecristo.cc{forecast.UrlImagen}";
+                        <td><img src = "@urlImagen" style = "width: 50px; height: auto;" /> </td>
+                    }
+                    else
+                    {
+                        <td>@forecast.UrlImagen</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("https://localhost:7296/api/doctrina");
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("http://apiidc.iglesiadecristo.cc/api/doctrina");
+    }
+
+    public class WeatherForecast
+    {
+        public int IdDoctrina { get; set; }
+        public int IdCongregacion { get; set; }
+        public string? Titulo { get; set; }
+        public string? Descripcion { get; set; }
+        public string? UrlImagen { get; set; }
+        public DateTime? FechaCreacion { get; set; }
+        public DateTime? FechaEdicion { get; set; }
+        public string? UrlVideoYoutube { get; set; }
+    }
+}
