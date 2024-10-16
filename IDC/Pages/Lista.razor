@@ -1,4 +1,5 @@
 ﻿@using IDC.DTOs
+@inject GlobalUtil globalUtil
 @inject Microsoft.JSInterop.IJSRuntime JSRuntime
 
 @code {
@@ -58,7 +59,7 @@
                                 <h5 style="background-color: #5b6d7f !important;" class="card-header text-white">@item.Titulo</h5>
                                 @if (!string.IsNullOrWhiteSpace(item.UrlImagen))
                                 {
-                                    <img alt="@item.Titulo" style="max-width: 200px !important; margin: 0 auto;" src="@item.UrlImagen" class="card-img-top d-block">
+                                    <img alt="@item.Titulo" style="max-width: 200px !important; margin: 0 auto;" src="@($"{globalUtil.UrlIDCAnterior}/{item.UrlImagen}")" class="card-img-top d-block">
                                 }
                             </header>
                             <article class="card-body">

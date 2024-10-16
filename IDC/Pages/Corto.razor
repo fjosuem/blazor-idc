@@ -1,59 +1,23 @@
 ﻿@page "/corto"
+@using IDC.DTOs
 @inject HttpClient Http
 @inject GlobalUtil globalUtil
-@inject Microsoft.JSInterop.IJSRuntime JSRuntime
 
-<Spinner />
-
-<section class="row bg-light text-dark">
-    <article class="col">
-        <h1 itemprop="name" class="text-center tituloHdos">Cortos</h1>
-    </article>
-</section>
-
-<div class="d-flex justify-content-center">
-    <PaginacionSecciones PageSize="PageSize" PageIndex="PageIndex" PageChanged="PageChanged" TotalPages="TotalPages" />
-</div>
-
-<section class="container bg-white pt-2">
-    <section class="row row-cols-1 row-cols-md-4 g-4">
-
-        @if (listacorto != null)
-        {
-            foreach (var seccion in listacorto)
-            {
-                <section class="col hvr-shrink justify-content-center d-flex">
-                    <section class="card hvr-shrink cardTieneContenido">
-                        <NavLink title="Ver sección" class="text-decoration-none" href="@($"detallecorto/{globalUtil.GenerarSlug(seccion.Idcorto, seccion?.Titulo)}")">
-
-                            <input type="hidden" id="id" name="id" value="seccion.GenerateSlug" />
-
-                            <header>
-                                <h5 style="background-color: #5b6d7f !important;" class="card-header text-white">@seccion.Titulo</h5>
-                                @if (!string.IsNullOrWhiteSpace(seccion.UrlImagen))
-                                {
-                                    <img alt="@seccion.Titulo" style="max-width: 200px !important; margin: 0 auto;" src="@($"{globalUtil.UrlIDCAnterior}/{seccion.UrlImagen}")" class="card-img-top d-block">
-                                }
-                            </header>
-                        </NavLink>
-                    </section>
-                </section>
-            }
-        }
-    </section>
-
-</section>
-
-<div class="d-flex mt-2 justify-content-center">
-    <PaginacionSecciones PageSize="PageSize" PageIndex="PageIndex" PageChanged="PageChanged" TotalPages="TotalPages" />
-</div>
+<Lista Titulo="Corto"
+       UrlImagen="@UrlImagenCorto"
+       ListaItems="listaCorto"
+       RutaDetalle="corto"
+       TotalPages="TotalPages"
+       PageIndex="PageIndex"
+       PageSize="PageSize"
+       OnPageChanged="PageChanged" />
 
 @code {
-    private CortoDTO[]? listacorto;
+    private CortoDTO[]? listaCorto;
     private int TotalPages { get; set; }
     private int PageSize { get; set; } = 12;
     private int PageIndex { get; set; } = 1;
-    public string? UrlImagencorto { get; set; }
+    public string? UrlImagenCorto { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,37 +26,17 @@
 
     private async Task LoadData()
     {
-        listacorto = await Http.GetFromJsonAsync<CortoDTO[]>($"{globalUtil.UrlApi}/api/corto/pag/{PageIndex}/{PageSize}");
-        if (listacorto != null)
+        listaCorto = await Http.GetFromJsonAsync<CortoDTO[]>($"{globalUtil.UrlApi}/api/corto/pag/{PageIndex}/{PageSize}");
+        if (listaCorto != null)
         {
-            TotalPages = listacorto[0].TotalPaginas;
-            UrlImagencorto = $"{globalUtil.UrlIDCAnterior}/Images/cortoes.jpeg";
+            TotalPages = listaCorto[0].TotalPaginas;
+            UrlImagenCorto = string.Empty;
         }
-    }
-
-    public class CortoDTO
-    {
-        public int Idcorto { get; set; }
-        public int IdCongregacion { get; set; }
-        public string? Titulo { get; set; }
-        public string? Descripcion { get; set; }
-        public string? UrlImagen { get; set; }
-        public int TotalPaginas { get; set; }
-        public string? UrlImagenCorto { get; set; }
     }
 
     private async Task PageChanged(int page)
     {
         PageIndex = page;
         await LoadData();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await Task.Delay(2000);
-            await JSRuntime.InvokeVoidAsync("hideSpinnerOP");
-        }
     }
 }

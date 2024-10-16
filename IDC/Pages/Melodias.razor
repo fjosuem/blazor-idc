@@ -1,23 +1,23 @@
-﻿@page "/griego"
+﻿@page "/melodias"
 @using IDC.DTOs
 @inject HttpClient Http
 @inject GlobalUtil globalUtil
 
-<Lista Titulo="Griego del N.T."
-       UrlImagen="@UrlImagenGriego"
-       ListaItems="listaGriego"
-       RutaDetalle="griego"
+<Lista Titulo="Melodías"
+       UrlImagen="@UrlImagenAlabanza"
+       ListaItems="listaAlabanza"
+       RutaDetalle="melodias"
        TotalPages="TotalPages"
        PageIndex="PageIndex"
        PageSize="PageSize"
        OnPageChanged="PageChanged" />
 
 @code {
-    private GriegoDTO[]? listaGriego;
+    private AlabanzaDTO[]? listaAlabanza;
     private int TotalPages { get; set; }
     private int PageSize { get; set; } = 12;
     private int PageIndex { get; set; } = 1;
-    public string? UrlImagenGriego { get; set; }
+    public string? UrlImagenAlabanza { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -26,11 +26,11 @@
 
     private async Task LoadData()
     {
-        listaGriego = await Http.GetFromJsonAsync<GriegoDTO[]>($"{globalUtil.UrlApi}/api/griego/pag/{PageIndex}/{PageSize}");
-        if (listaGriego != null)
+        listaAlabanza = await Http.GetFromJsonAsync<AlabanzaDTO[]>($"{globalUtil.UrlApi}/api/alabanza/pag/{PageIndex}/{PageSize}");
+        if (listaAlabanza != null)
         {
-            TotalPages = listaGriego[0].TotalPaginas;
-            UrlImagenGriego = $"{globalUtil.UrlIDCAnterior}/Images/griego.png";
+            TotalPages = listaAlabanza[0].TotalPaginas;
+            UrlImagenAlabanza = $"{globalUtil.UrlIDCAnterior}/Images/alabanzas.jpeg";
         }
     }
 
