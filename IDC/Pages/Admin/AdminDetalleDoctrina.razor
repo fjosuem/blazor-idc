@@ -1,0 +1,187 @@
+﻿@page "/admindoctrina/{id}"
+@inject HttpClient Http
+@inject GlobalUtil globalUtil
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+@using IDC.DTOs
+
+<div class="container mt-4">
+    <h3>Mantenimiento de Doctrina y Detalles</h3>
+
+    @if (doctrinaSeleccionada == null)
+    {
+        <p><em>Cargando...</em></p>
+    }
+    else
+    {
+        <h5>Editar Doctrina</h5>
+        <EditForm Model="@doctrinaSeleccionada" OnValidSubmit="GuardarDoctrina">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Título</label>
+                <InputText id="titulo" class="form-control" @bind-Value="doctrinaSeleccionada.Titulo" />
+            </div>
+
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <InputTextArea id="descripcion" class="form-control" @bind-Value="doctrinaSeleccionada.Descripcion" />
+            </div>
+
+            <div class="mb-3">
+                <label for="urlImagen" class="form-label">URL Imagen</label>
+                <InputText id="urlImagen" class="form-control" @bind-Value="doctrinaSeleccionada.UrlImagen" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar Doctrina</button>
+        </EditForm>
+
+        <h5 class="mt-4">Detalles de Doctrina</h5>
+
+        @if (listaDetalles == null)
+        {
+            <p><em>Cargando detalles...</em></p>
+        }
+        else if (listaDetalles.Count() == 0)
+        {
+            <div class="alert alert-warning" role="alert">
+                No se encontraron detalles para esta doctrina.
+            </div>
+        }
+        else
+        {
+            <table class="table table-striped table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Título</th>
+                        @* <th>Descripción</th> *@
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in listaDetalles)
+                    {
+                        <tr>
+                            <td>@detalle.Titulo</td>
+                            @* <td>@detalle.Descripcion</td> *@
+                            @* <td>
+                @{
+                string descripcionDecodificada = !string.IsNullOrEmpty(detalle.Descripcion) ? System.Net.WebUtility.UrlDecode(detalle.Descripcion) : "";
+                }
+                @((!string.IsNullOrEmpty(descripcionDecodificada)) ? (MarkupString)RemoveUnwantedCharacters(descripcionDecodificada) : null)
+                </td> *@
+                            <td>
+                                <button class="btn btn-warning btn-sm" @onclick="@(() => EditarDetalle(detalle))"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-danger btn-sm" @onclick="@(() => EliminarDetalle(detalle.IdDetalleDoctrina))"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <h5 class="mt-4">Agregar Detalle de Doctrina</h5>
+        <EditForm Model="@nuevoDetalle" OnValidSubmit="AgregarDetalle">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="tituloDetalle" class="form-label">Título</label>
+                <InputText id="tituloDetalle" class="form-control" @bind-Value="nuevoDetalle.Titulo" />
+            </div>
+
+            <div class="mb-3">
+                <label for="descripcionDetalle" class="form-label">Descripción</label>
+
+                @* <div id="editor"></div> *@
+                @{
+                    // Primero, descodificamos cualquier codificación URL y HTML
+                    string descripcionDecodificada = !string.IsNullOrEmpty(nuevoDetalle.Descripcion)
+                    ? System.Net.WebUtility.HtmlDecode(System.Net.WebUtility.UrlDecode(nuevoDetalle.Descripcion))
+                    : "";
+                }
+
+                <CKEditor id="editor" Content="@(descripcionDecodificada.ToString())" />
+
+            </div>
+
+            <button type="submit" class="btn btn-primary">Agregar Detalle</button>
+        </EditForm>
+    }
+
+    <div class="d-flex mt-2 justify-content-center">
+        <PaginacionSecciones PageSize="PageSize" PageIndex="PageIndex" PageChanged="PageChanged" TotalPages="TotalPages" />
+    </div>
+</div>
+
+@code {
+    [Parameter] public string id { get; set; } = "";
+    private DoctrinaDTO? doctrinaSeleccionada;
+    private DetalleDoctrinaDTO[]? listaDetalles;
+    private DetalleDoctrinaDTO nuevoDetalle = new DetalleDoctrinaDTO();
+    private int TotalPages { get; set; }
+    private int PageSize { get; set; } = 12;
+    private int PageIndex { get; set; } = 1;
+    private IJSObjectReference _editorInstance;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        // Cargar Doctrina (ejemplo: id=1)
+        doctrinaSeleccionada = await Http.GetFromJsonAsync<DoctrinaDTO>($"{globalUtil.UrlApi}/api/doctrina/{id}");
+        listaDetalles = await Http.GetFromJsonAsync<DetalleDoctrinaDTO[]>($"{globalUtil.UrlApi}/api/doctrina/detalle/{doctrinaSeleccionada.IdDoctrina}");
+    }
+
+    private async Task GuardarDoctrina()
+    {
+        // Lógica para guardar la doctrina, llamando a la API
+        await Http.PutAsJsonAsync($"{globalUtil.UrlApi}/api/doctrina/{doctrinaSeleccionada.IdDoctrina}", doctrinaSeleccionada);
+    }
+
+    private async Task AgregarDetalle()
+    {
+        nuevoDetalle.IdDoctrina = doctrinaSeleccionada.IdDoctrina;
+        await Http.PostAsJsonAsync($"{globalUtil.UrlApi}/api/detalle", nuevoDetalle);
+        nuevoDetalle = new DetalleDoctrinaDTO(); // Reiniciar el formulario
+        await LoadData(); // Recargar los detalles
+    }
+
+    private async void EditarDetalle(DetalleDoctrinaDTO detalle)
+    {
+        // Lógica para editar un detalle (puedes implementar un modal)
+        nuevoDetalle = detalle; // Cargar los datos en el formulario para editar
+
+
+        // Si el editor ya está inicializado, actualizamos su contenido
+        // await JSRuntime.InvokeVoidAsync("setEditorContent", "editor", nuevoDetalle.Descripcion);
+        // StateHasChanged();
+        // if (_editorInstance != null)
+        // {
+        //     _editorInstance.InvokeVoidAsync("setEditorContent", "editor", nuevoDetalle.Descripcion);
+        // }
+    }
+
+    private async Task EliminarDetalle(int id)
+    {
+        await Http.DeleteAsync($"{globalUtil.UrlApi}/api/detalle/{id}");
+        await LoadData(); // Recargar los detalles
+    }
+
+    private string? RemoveUnwantedCharacters(string? input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        return input.Replace("%u200B", "");
+    }
+
+    private async Task PageChanged(int page)
+    {
+        PageIndex = page;
+        await LoadData();
+    }
+}

@@ -7,8 +7,8 @@ namespace IDC
     public class GlobalUtil
     {
         public string UrlIDCAnterior { get; set; } = "https://iglesiadecristo.cc";
-        //public string UrlApi { get; set; } = "https://localhost:7296";
-        public string UrlApi { get; set; } = "http://apiidc.iglesiadecristo.cc";
+        public string UrlApi { get; set; } = "https://localhost:7296";
+        //public string UrlApi { get; set; } = "http://apiidc.iglesiadecristo.cc";
 
         // Método para generar el slug a partir del id y el título
         public string GenerarSlug(int id, string titulo)

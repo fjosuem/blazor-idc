@@ -10,4 +10,10 @@
         public DateTime? FechaCreacion { get; set; }
         public DateTime? FechaEdicion { get; set; }
     }
+    
+    public class DetalleDoctrinaDTO: DetalleItemDTO
+    {
+        public int IdDetalleDoctrina { get; set; }
+        public int IdDoctrina { get; set; }
+    }
 }

@@ -1,0 +1,98 @@
+﻿@page "/admindoctrina"
+@inject HttpClient Http
+@inject GlobalUtil globalUtil
+@inject NavigationManager NavigationManager
+@using IDC.DTOs
+
+<div class="container mt-4">
+    <h3>Lista de Doctrinas</h3>
+
+    @if (listaDoctrina == null)
+    {
+        <p><em>Cargando...</em></p>
+    }
+    else if (listaDoctrina.Count() == 0)
+    {
+        <div class="alert alert-warning" role="alert">
+            No se encontraron doctrinas.
+        </div>
+    }
+    else
+    {
+        <div class="d-flex mt-2 justify-content-center">
+            <PaginacionSecciones PageSize="PageSize" PageIndex="PageIndex" PageChanged="PageChanged" TotalPages="TotalPages" />
+        </div>
+        <table class="table table-striped table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Imagen</th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var doctrina in listaDoctrina)
+                {
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrEmpty(doctrina.UrlImagen))
+                            {
+                                <img src="@($"{globalUtil.UrlIDCAnterior}/{doctrina.UrlImagen}")" width="100" />
+                            }
+                        </td>
+                        <td>@doctrina.Titulo</td>
+                        <td>@doctrina.Descripcion</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" @onclick="@(() => EditDoctrina(doctrina.IdDoctrina))"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger btn-sm" @onclick="@(() => DeleteDoctrina(doctrina.IdDoctrina))"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="d-flex mt-2 justify-content-center">
+            <PaginacionSecciones PageSize="PageSize" PageIndex="PageIndex" PageChanged="PageChanged" TotalPages="TotalPages" />
+        </div>
+    }
+
+</div>
+
+@code {
+    private DoctrinaDTO[]? listaDoctrina;
+    private int TotalPages { get; set; }
+    public string? UrlImagenDoctrina { get; set; }
+    private int PageSize { get; set; } = 12;
+    private int PageIndex { get; set; } = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        listaDoctrina = await Http.GetFromJsonAsync<DoctrinaDTO[]>($"{globalUtil.UrlApi}/api/doctrina/pag/{PageIndex}/{PageSize}");
+        if (listaDoctrina != null)
+        {
+            TotalPages = listaDoctrina[0].TotalPaginas;
+            UrlImagenDoctrina = $"{globalUtil.UrlIDCAnterior}/{listaDoctrina[0].UrlImagenDoctrina}";
+        }
+    }
+
+    private async Task PageChanged(int page)
+    {
+        PageIndex = page;
+        await LoadData();
+    }
+
+    private void EditDoctrina(int id)
+    {
+        NavigationManager.NavigateTo($"/admindoctrina/{id}");
+    }
+
+    private void DeleteDoctrina(int id)
+    {
+        // Lógica para eliminar la doctrina (p.ej., llamar a la API)
+    }
+}
